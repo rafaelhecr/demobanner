@@ -11,7 +11,7 @@ export default function Home({news}) {
           news.map(n => (
             <>
               <p>
-                <a target="_blank" href="http://keystothevault.com/events/">{n.text}</a>
+                <a target="_blank" rel="noopener" href="http://keystothevault.com/events/">{n.text}</a>
               </p>
             </>
           ))
