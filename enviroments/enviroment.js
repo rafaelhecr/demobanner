@@ -1,0 +1,1 @@
+export const CMS_URL = 'https://cdn.contentful.com/spaces/dpfyxoc71hxt/environments/master/entries?access_token=_KjWIpr0v1hxJ-QIBjHE_RCJSZE5nTaUiV4BseFMzfk';

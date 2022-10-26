@@ -1,57 +1,66 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import React, {useState, useEffect} from "react";
+import { CMS_URL } from "../enviroments/enviroment";
 
-export default function Home({items, news}) {
-  return (
-    <>
-      <div className='well-white'>
-        <h5>Learn More From <br/> Keith Cunninham</h5>
-        {/* {
-          news.map(n => (
-            <>
-              <p>
-                <a target="_blank" rel="noreferrer" href="http://keystothevault.com/events/">{n.text}</a>
-              </p>
-            </>
-          ))
-        } */}
-        {
-          items.map((n,i) => (
-            <>
-              <p>
-                <a key={i} 
-                target="_blank" 
-                rel="noreferrer" 
-                href={n.fields.demo3}>
-                  {n.fields.nameOfNews}
-                </a>
-              </p>
-            </>
-          ))
-        }
-      </div>
-    </>
-  )
-}
+export default function Home() {
+  const [items, setItems] = useState([]);
 
-export async function getStaticProps(){
+  useEffect(function callApi(){
+    getData().then(items => setItems(items))
+    
+  }, [])
+
+  if(items.length !== 0){
+    return (
+      <>
+        <div className='well-white'>
+          <h5>Learn More From <br /> Keith Cunninham</h5>
+          {
+            items.map(n => (
+              <div key={n.fields.nameOfNews}>
   
-    const res = await fetch('https://cdn.contentful.com/spaces/dpfyxoc71hxt/environments/master/entries?access_token=_KjWIpr0v1hxJ-QIBjHE_RCJSZE5nTaUiV4BseFMzfk')
-    const response = await res.json();
-    const {items} = response
-
+                {n?.imageURL ? <img src={`https:\\${n.imageURL}`} width='100%' alt='descroption of' /> : null}
+                <p>
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={n.fields.demo3}>
+                    {n.fields.nameOfNews}
+                  </a>
+                </p>
   
-
-  const news = [
-    {text: 'Plan or Get Slaughtered'},
-    {text: '4-Day MBA'},
-    {text: 'How to Buy or Exit a Business'}
-  ]
-
-  return{
-    props:{
-      items, news
-    }
+                <div className="border"></div>
+              </div>
+            ))
+          }
+        </div>
+      </>
+    )
+  } else {
+    return null
   }
+}
+async function getData() {
+
+  const res = await fetch(CMS_URL)
+  const response = await res.json();
+  const { items, includes } = response
+
+  // const { Asset } = includes;
+
+  const itemsImages = items.map(item => {
+    if(includes?.Asset){
+      for (const asset of includes?.Asset) {
+        if (item.fields?.imageNews?.sys?.id === asset.sys.id) {
+          return item = { ...item, imageURL: asset.fields.file.url }
+        } else {
+          return item
+        }
+      }
+    } else {
+      return item
+    }
+  })
+
+
+  return itemsImages
 }
